@@ -1,6 +1,14 @@
 # Banking System API
+[![Java](https://img.shields.io/badge/Java-17-blue)](https://www.java.com/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Yes-blue)](https://www.docker.com/)
+[![Terraform](https://img.shields.io/badge/Terraform-Yes-blue)](https://www.terraform.io/)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-blue)](https://github.com/features/actions)
+[![Status](https://img.shields.io/badge/Status-In%20Development-orange)](https://github.com/)
 
-🚧 **Status: In Development** 🚧
+
+
 
 REST API developed with **Java and Spring Boot** that simulates a banking/financial system.  
 This project was created with a strong focus on **backend best practices**, **layered architecture**, and **modern DevOps concepts**.
