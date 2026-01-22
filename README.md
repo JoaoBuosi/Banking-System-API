@@ -1,42 +1,79 @@
 # Banking System API
 
-🚧 **Status: Em desenvolvimento** 🚧
+🚧 **Status: In Development** 🚧
 
-API REST desenvolvida em **Java com Spring Boot** que simula um sistema bancário/financeiro, criada com foco em **boas práticas de backend**, **arquitetura em camadas** e **conceitos modernos de DevOps**.
+REST API developed with **Java and Spring Boot** that simulates a banking/financial system.  
+This project was created with a strong focus on **backend best practices**, **layered architecture**, and **modern DevOps concepts**.
 
-Este projeto faz parte do meu portfólio e está sendo evoluído continuamente para aplicar conhecimentos reais utilizados em ambientes corporativos.
-
----
-
-## 📌 Visão Geral
-
-A aplicação fornece endpoints para gerenciamento de:
-
-- Clientes
-- Contas bancárias
-- Transações financeiras
-
-O sistema utiliza **MySQL** como banco de dados relacional e segue o padrão de separação de responsabilidades entre **Controller, Service e Repository**.
-
-Além do backend, o projeto inclui **containerização com Docker** e **infraestrutura como código com Terraform**, preparando a aplicação para execução em ambientes cloud como a **AWS**.
+The application is part of my professional portfolio and is being continuously improved to reflect real-world enterprise development practices.
 
 ---
 
-## 🧩 Tecnologias Utilizadas
+## 📌 Overview
+
+The application provides REST endpoints for managing:
+
+- Clients
+- Bank accounts
+- Financial transactions
+
+The system uses **MySQL** as a relational database and follows a clear separation of responsibilities between **Controller, Service, and Repository** layers.
+
+In addition to the backend, the project includes **Docker containerization** and **Infrastructure as Code using Terraform**, preparing the application for cloud environments such as **AWS**.
+
+---
+
+## 🧩 Technologies Used
 
 - **Java 17**
 - **Spring Boot**
 - **Spring Data JPA / Hibernate**
-- **API REST**
+- **REST API**
 - **MySQL**
 - **Maven**
 - **Docker**
 - **Docker Compose**
 - **Terraform**
 - **Swagger / OpenAPI**
-- **JWT (conceitos de autenticação)**
+- **JWT (authentication concepts)**
 
 ---
 
-## 🏗️ Arquitetura do Projeto
+## 🏗️ Project Architecture
+
+com.bank
+├─ controller # REST endpoints
+├─ service # Business logic
+├─ repository # Data access layer (JPA)
+├─ model # Domain entities
+├─ dto # Data Transfer Objects
+├─ security # Security configuration
+├─ exception # Global exception handling
+└─ BankingSystemApplication.java
+
+
+This structure follows common enterprise patterns and makes the application easier to maintain, test, and scale.
+
+---
+
+## ▶️ Running the Project Locally
+
+### Requirements
+- Java 17+
+- Maven
+- Docker
+- MySQL (or Docker)
+
+### Run with Maven
+```bash
+mvn spring-boot:run
+Run with Docker
+docker build -t banking-app .
+docker run -p 8080:8080 banking-app
+📚 API Documentation
+The API is automatically documented using Swagger.
+
+After starting the application, access:
+
+http://localhost:8080/swagger-ui.html
 
