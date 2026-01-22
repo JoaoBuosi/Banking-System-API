@@ -4,7 +4,6 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Yes-blue)](https://www.docker.com/)
 [![Terraform](https://img.shields.io/badge/Terraform-Yes-blue)](https://www.terraform.io/)
-[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-blue)](https://github.com/features/actions)
 [![Status](https://img.shields.io/badge/Status-In%20Development-orange)](https://github.com/)
 
 
