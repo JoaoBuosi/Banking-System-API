@@ -6,64 +6,131 @@ import com.bank.model.Conta;
 import com.bank.model.Transacao;
 import com.bank.repository.ContaRepository;
 import com.bank.repository.TransacaoRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
-@Service
-public class TransacaoService {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-    private final TransacaoRepository repository;
-    private final ContaRepository contaRepository;
+@ExtendWith(MockitoExtension.class)
+class TransacaoServiceTest {
 
-    public TransacaoService(TransacaoRepository repository, ContaRepository contaRepository) {
-        this.repository = repository;
-        this.contaRepository = contaRepository;
+    @Mock
+    private TransacaoRepository transacaoRepository;
+
+    @Mock
+    private ContaRepository contaRepository;
+
+    @InjectMocks
+    private TransacaoService transacaoService;
+
+    private Conta conta;
+
+    @BeforeEach
+    void setUp() {
+        conta = new Conta();
+        conta.setId(1L);
+        conta.setSaldo(100.0);
     }
 
-    @Transactional
-    public Transacao salvar(Transacao t) {
-        Long contaId = t.getConta().getId();
+    @Test
+    void deveRealizarDepositoComSucesso() {
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setValor(50.0);
+        transacao.setTipo("DEPOSITO");
 
-        Conta conta = contaRepository.findById(contaId)
-                .orElseThrow(() -> new ContaNotFoundException("Conta não encontrada: " + contaId));
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+        when(contaRepository.save(any(Conta.class))).thenReturn(conta);
+        when(transacaoRepository.save(any(Transacao.class))).thenReturn(transacao);
 
-        if (t.getValor() <= 0) {
-            throw new IllegalArgumentException("O valor da transação deve ser maior que zero");
-        }
+        Transacao resultado = transacaoService.salvar(transacao);
 
-        switch (t.getTipo().toUpperCase()) {
-            case "DEPOSITO":
-                conta.setSaldo(conta.getSaldo() + t.getValor());
-                break;
-
-            case "SAQUE":
-                if (conta.getSaldo() < t.getValor()) {
-                    throw new SaldoInsuficienteException(
-                            "Saldo insuficiente. Saldo atual: " + conta.getSaldo());
-                }
-                conta.setSaldo(conta.getSaldo() - t.getValor());
-                break;
-
-            default:
-                throw new IllegalArgumentException("Tipo de transação inválido: " + t.getTipo());
-        }
-
-        contaRepository.save(conta);
-
-        t.setData(LocalDateTime.now());
-        t.setConta(conta);
-        return repository.save(t);
+        assertEquals(150.0, conta.getSaldo());
+        verify(contaRepository).save(conta);
+        verify(transacaoRepository).save(transacao);
     }
 
-    public List<Transacao> listar() {
-        return repository.findAll();
+    @Test
+    void deveRealizarSaqueComSucesso() {
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setValor(30.0);
+        transacao.setTipo("SAQUE");
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+        when(contaRepository.save(any(Conta.class))).thenReturn(conta);
+        when(transacaoRepository.save(any(Transacao.class))).thenReturn(transacao);
+
+        transacaoService.salvar(transacao);
+
+        assertEquals(70.0, conta.getSaldo());
     }
 
-    public Optional<Transacao> buscarPorId(Long id) {
-        return repository.findById(id);
+    @Test
+    void deveLancarExcecaoQuandoSaldoInsuficiente() {
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setValor(500.0);
+        transacao.setTipo("SAQUE");
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+
+        assertThrows(SaldoInsuficienteException.class,
+                () -> transacaoService.salvar(transacao));
+
+        // Saldo não deve mudar
+        assertEquals(100.0, conta.getSaldo());
+        verify(contaRepository, never()).save(any());
+        verify(transacaoRepository, never()).save(any());
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoContaNaoExiste() {
+        Conta contaInexistente = new Conta();
+        contaInexistente.setId(999L);
+
+        Transacao transacao = new Transacao();
+        transacao.setConta(contaInexistente);
+        transacao.setValor(50.0);
+        transacao.setTipo("DEPOSITO");
+
+        when(contaRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(ContaNotFoundException.class,
+                () -> transacaoService.salvar(transacao));
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoValorForZeroOuNegativo() {
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setValor(-10.0);
+        transacao.setTipo("DEPOSITO");
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> transacaoService.salvar(transacao));
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoTipoForInvalido() {
+        Transacao transacao = new Transacao();
+        transacao.setConta(conta);
+        transacao.setValor(50.0);
+        transacao.setTipo("PIX_ALEATORIO");
+
+        when(contaRepository.findById(1L)).thenReturn(Optional.of(conta));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> transacaoService.salvar(transacao));
     }
 }
